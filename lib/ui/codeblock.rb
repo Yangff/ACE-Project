@@ -129,7 +129,7 @@ class CodeBlock < Panel
     
     
     @sci.set_property("fold","1")
-    @sci.set_property("fold.compact", "1")
+    @sci.set_property("fold.compact", "0")
     @sci.set_property("fold.comment", "1")
     @sci.set_property("fold.preprocessor", "1")
     
@@ -171,7 +171,7 @@ class CodeBlock < Panel
     @popmenu.evt_menu 0,proc{|evt|@sci.cut}
     @popmenu.evt_menu 1,proc{|evt|@sci.copy}
     @popmenu.evt_menu 2,proc{|evt|@sci.paste}
-    @popmenu.evt_menu 3,proc{|evt|@keyWordDialog.show_modal}
+    @popmenu.evt_menu 3,proc{|evt|@keyWordDialog.clear_all;@keyWordDialog.show_modal}
     @popmenu.evt_menu 4,proc{|evt|searchNext}
     #Integer search_next(Integer flags, String text)
     @keyWordDialog=KeywordsDialog.new(window,self)
@@ -190,16 +190,20 @@ class CodeBlock < Panel
     Wx::MessageDialog.new(nil, LANG[:CODEBLOCK][text],LANG[:CODEBLOCK][:SearchWrong]).show_modal
   end
   def onSearch(keyword,func=0)
+    @searchflag=0
     @keyword=keyword
     if @keyword.nil?
       searchWrong(:KEYWORDMISS)
       return false     
     end
     @sci.search_anchor
-    beg_pos=@sci.search_next(0,keyword)
+    beg_pos=@sci.search_next(@searchflag,keyword)
     if (beg_pos!=-1)
       @end_pos = beg_pos + keyword.length+1
       @sci.goto_pos beg_pos
+      @sci.set_selection(beg_pos,@end_pos-1)
+      @sci.show_lines(@sci.line_from_position(beg_pos), @sci.line_from_position(@end_pos))
+      @sci.update
       @sci.search_anchor
     else
       searchWrong(:PAGEOVER)
@@ -215,10 +219,13 @@ class CodeBlock < Panel
     @sci.goto_pos @end_pos
     @sci.search_anchor
     
-    beg_pos=@sci.search_next(0,@keyword)
+    beg_pos=@sci.search_next(@searchflag,@keyword)
     if (beg_pos!=-1)
       @end_pos = beg_pos + @keyword.length+1
       @sci.goto_pos beg_pos
+      @sci.set_selection(beg_pos,@end_pos-1)
+      @sci.show_lines(@sci.line_from_position(beg_pos), @sci.line_from_position(@end_pos))
+      @sci.update
       @sci.search_anchor
     else
       searchWrong(:PAGEOVER)
