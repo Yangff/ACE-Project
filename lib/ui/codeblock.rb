@@ -3,7 +3,7 @@ TODO: !!Rewrite StyledTextCtrl By using new SciLexer!! or update wxRuby -> WTF!
 =end
 def deep_copy(obj)
   Marshal.load(Marshal.dump(obj))
-end 
+end
 class CodePage
   attr_accessor         :script
   attr_accessor         :name
@@ -15,7 +15,33 @@ class CodePage
     @stoppoints=[]
   end
 end
-class CodeBlock 
+class CodeBlock < Panel
+  class KeywordsDialog < Dialog  
+      def initialize(parent,helper,func=0, options = {})  
+          super(parent, options.merge!(:size => [500, 500])) 
+          @helper=helper
+          arrange_vertically do  
+              add @keyword = TextCtrl.new(self, :style => Wx::TE_MULTILINE,:size => [420, -1]), :proportion => 1              
+
+              arrange_horizontally do  
+                  add @status = StaticText.new(self, :label => '', :size => [150, -1]), :proportion => 1  
+                  add Button.new(self, :label => '查找') do |button|  
+                      evt_button(button) do |event|  
+                          #search  
+                          self.hide
+                          @helper.onSearch(@keyword.get_value,func)  
+                          @helper.sci.set_focus()
+                          get_parent.set_focus()
+                      end                   
+                  end               
+              end  
+          end       
+      end  
+      def clear_all
+        @keyword.set_value("")
+      end
+      attr_reader :keyword, :status  
+  end  
   #StatementIndent="class module def begin rescue ensure while for case when unless if else elsif do" *TODO
   #StatementEnd="end else elsif when rescue ensure"                                                   *TODO
   #BlockStart="{"                                                                                     *TODO
@@ -32,10 +58,12 @@ class CodeBlock
     return @pages
   end
   def initialize(window,auto=[],now=0)
+
     font = Font.new(12, TELETYPE, NORMAL, NORMAL,false,"Lucida Console")
     @dirty=false
     @oldpages=deep_copy(auto)
-    @sci = StyledTextCtrl.new(window)  
+    
+    @sci = StyledTextCtrl.new(window)
     @sci.use_pop_up false
     @sci.set_edge_mode(STC_EDGE_LINE)
     @sci.set_margin_type(1,STC_MARGIN_NUMBER)
@@ -143,8 +171,13 @@ class CodeBlock
     @popmenu.evt_menu 0,proc{|evt|@sci.cut}
     @popmenu.evt_menu 1,proc{|evt|@sci.copy}
     @popmenu.evt_menu 2,proc{|evt|@sci.paste}
+    @popmenu.evt_menu 3,proc{|evt|@keyWordDialog.show_modal}
+    @popmenu.evt_menu 4,proc{|evt|searchNext}
     #Integer search_next(Integer flags, String text)
-    
+    @keyWordDialog=KeywordsDialog.new(window,self)
+    @keyWordDialogWhole=KeywordsDialog.new(window,self,1)
+    @window=window
+    #
     if auto.size==0
       @page=1
       @pages=[nil,CodePage.new]
@@ -152,6 +185,45 @@ class CodeBlock
       @page=now
       
     end
+  end
+  def searchWrong(text)
+    Wx::MessageDialog.new(nil, LANG[:CODEBLOCK][text],LANG[:CODEBLOCK][:SearchWrong]).show_modal
+  end
+  def onSearch(keyword,func=0)
+    @keyword=keyword
+    if @keyword.nil?
+      searchWrong(:KEYWORDMISS)
+      return false     
+    end
+    @sci.search_anchor
+    beg_pos=@sci.search_next(0,keyword)
+    if (beg_pos!=-1)
+      @end_pos = beg_pos + keyword.length+1
+      @sci.goto_pos beg_pos
+      @sci.search_anchor
+    else
+      searchWrong(:PAGEOVER)
+      @end_pos = 0
+      @sci.goto_pos 0
+    end
+  end
+  def searchNext
+    if @keyword.nil?
+      searchWrong(:KEYWORDMISS)
+      return false
+    end
+    @sci.goto_pos @end_pos
+    @sci.search_anchor
+    
+    beg_pos=@sci.search_next(0,@keyword)
+    if (beg_pos!=-1)
+      @end_pos = beg_pos + @keyword.length+1
+      @sci.goto_pos beg_pos
+      @sci.search_anchor
+    else
+      searchWrong(:PAGEOVER)
+      @end_pos = 0
+    end    
   end
   def apply
     save_page
