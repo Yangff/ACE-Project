@@ -62,8 +62,8 @@ class CodeBlock < Panel
     font = Font.new(12, TELETYPE, NORMAL, NORMAL,false,"Lucida Console")
     @dirty=false
     @oldpages=deep_copy(auto)
-    
     @sci = StyledTextCtrl.new(window)
+    window.add @sci, :proportion => 1  
     @sci.use_pop_up false
     @sci.set_edge_mode(STC_EDGE_LINE)
     @sci.set_margin_type(1,STC_MARGIN_NUMBER)
@@ -192,7 +192,7 @@ class CodeBlock < Panel
   def onSearch(keyword,func=0)
     @searchflag=0
     @keyword=keyword
-    if @keyword.nil?
+    if @keyword..to_s==""
       searchWrong(:KEYWORDMISS)
       return false     
     end
@@ -212,7 +212,7 @@ class CodeBlock < Panel
     end
   end
   def searchNext
-    if @keyword.nil?
+    if @keyword.to_s==""
       searchWrong(:KEYWORDMISS)
       return false
     end
