@@ -42,10 +42,10 @@ class RMMain < Frame
                                             Wx::Size.new(16,16) )    
     @ctrl.add_page(CodeEditor.new(self),LANG[:CODEBLOCK][:TITLE],false,page_bmp)
     pi = Wx::AuiPaneInfo.new
-    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left.hide
+    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left #.hide {auto hide}
     @mgr.add_pane(ScriptGuide.new(self),pi)
     pi = Wx::AuiPaneInfo.new
-    pi.set_name('notebook_content').center_pane.hide
+    pi.set_name('notebook_content').center_pane #.hide  {auto hide}
     @mgr.add_pane(@ctrl, pi)
     set_min_size( Wx::Size.new(400,300) )
     

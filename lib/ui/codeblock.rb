@@ -25,7 +25,7 @@ class CodeBlock < Panel
 
               arrange_horizontally do  
                   add @status = StaticText.new(self, :label => '', :size => [150, -1]), :proportion => 1  
-                  add Button.new(self, :label => '查找') do |button|  
+                  add Button.new(self, :label => LANG[:CODEBLOCK][:FIND]) do |button|  
                       evt_button(button) do |event|  
                           #search  
                           self.hide
