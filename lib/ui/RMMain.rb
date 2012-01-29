@@ -15,15 +15,7 @@ class RMMain < Frame
 
   def initialize(open="")
     super(nil,:title=>ProjectManager.title,:size=>[800,600])
-    menuFile = Wx::Menu.new()
-    menuEdit = Wx::Menu.new()
-    @FLAG=[]
-    Helpers.createMenu(menuFile,LANG[:MENU][:FILEs],@FLAG)
-    Helpers.createMenu(menuEdit,LANG[:MENU][:EDITs],@FLAG)
-    menuBar = Wx::MenuBar.new()
-    menuBar.append(menuFile,LANG[:MENU][:FILE])
-    menuBar.append(menuEdit,LANG[:MENU][:EDIT])
-    set_menu_bar( menuBar )
+    initializemenu
     #@textbox=CodeBlock.new(self)
     @mgr = AuiManager.new()
     @mgr.set_managed_window(self)
@@ -40,16 +32,28 @@ class RMMain < Frame
     page_bmp = Wx::ArtProvider::get_bitmap( Wx::ART_NORMAL_FILE, 
                                             Wx::ART_OTHER, 
                                             Wx::Size.new(16,16) )    
-    @ctrl.add_page(CodeEditor.new(self),LANG[:CODEBLOCK][:TITLE],false,page_bmp)
+    @ctrl.add_page(@codeeditor=CodeEditor.new(self),LANG[:CODEBLOCK][:TITLE],false,page_bmp)
     pi = Wx::AuiPaneInfo.new
-    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left #.hide {auto hide}
+    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left.hide# {auto hide}
     @mgr.add_pane(ScriptGuide.new(self),pi)
     pi = Wx::AuiPaneInfo.new
     pi.set_name('notebook_content').center_pane #.hide  {auto hide}
     @mgr.add_pane(@ctrl, pi)
     set_min_size( Wx::Size.new(400,300) )
-    
     @mgr.update
+  end
+  def initializemenu
+    menuBar = Wx::MenuBar.new()
+    @FLAG=[]
+    for i in 0...LANG[:MENU][:KEYS].size
+      if LANG[:MENU][:KEYS][i].is_a?(Symbol) and LANG[:MENU][:VALUES][i].is_a?(Symbol) and LANG[:MENU][LANG[:MENU][:VALUES][i]].is_a?(Array)
+        proc {$SAFE=2;eval("@menu#{LANG[:MENU][:KEYS][i].to_s} = Wx::Menu.new();Helpers.createMenu(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:VALUES][i].to_s}],@FLAG);menuBar.append(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:KEYS][i].to_s}])")}.call()
+      else
+        print "Error on Loading Menu Language File\r\n"
+      end
+    end
+    set_menu_bar( menuBar )
+    
   end
   attr_reader :mgr,:codeeditor
 end

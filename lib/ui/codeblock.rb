@@ -9,16 +9,16 @@ class CodePage
   attr_accessor         :name
   attr_accessor         :stoppoints
   attr_accessor         :row
-  def initialize
-    @script=""
-    @name=""
-    @stoppoints=[]
+  def initialize(script="",name="",stoppoints="")
+    @script=script
+    @name=name
+    @stoppoints=stoppoints
   end
 end
 class CodeBlock < Panel
   class KeywordsDialog < Dialog  
       def initialize(parent,helper,func=0, options = {})  
-          super(parent, options.merge!(:size => [500, 500])) 
+          super(parent, options.merge!(:size => [500, 500],:title=>LANG[:CODEBLOCK][:FIND])) 
           @helper=helper
           arrange_vertically do  
               add @keyword = TextCtrl.new(self, :style => Wx::TE_MULTILINE,:size => [420, -1]), :proportion => 1              
@@ -171,8 +171,10 @@ class CodeBlock < Panel
     @popmenu.evt_menu 0,proc{|evt|@sci.cut}
     @popmenu.evt_menu 1,proc{|evt|@sci.copy}
     @popmenu.evt_menu 2,proc{|evt|@sci.paste}
-    @popmenu.evt_menu 3,proc{|evt|@keyWordDialog.clear_all;@keyWordDialog.show_modal}
-    @popmenu.evt_menu 4,proc{|evt|searchNext}
+    @popmenu.evt_menu 3,proc{|evt|@sci.select_all}
+    @popmenu.evt_menu 4,proc{|evt|@keyWordDialog.clear_all;@keyWordDialog.show_modal}
+    @popmenu.evt_menu 5,proc{|evt|searchNext}
+    @popmenu.evt_menu 6,proc{|evt|changeto(2)}
     #Integer search_next(Integer flags, String text)
     @keyWordDialog=KeywordsDialog.new(window,self)
     @keyWordDialogWhole=KeywordsDialog.new(window,self,1)
@@ -180,11 +182,11 @@ class CodeBlock < Panel
     #
     if auto.size==0
       @page=1
-      @pages=[nil,CodePage.new]
+      @pages=[nil,CodePage.new("","",[])]
     else
       @page=now
-      
     end
+    impolitechangeto(@page)
   end
   def searchWrong(text)
     Wx::MessageDialog.new(nil, LANG[:CODEBLOCK][text],LANG[:CODEBLOCK][:SearchWrong]).show_modal
@@ -192,7 +194,7 @@ class CodeBlock < Panel
   def onSearch(keyword,func=0)
     @searchflag=0
     @keyword=keyword
-    if @keyword..to_s==""
+    if @keyword.to_s==""
       searchWrong(:KEYWORDMISS)
       return false     
     end
@@ -249,7 +251,7 @@ class CodeBlock < Panel
   def clear_all
     @sci.clear_all()
     @sci.marker_delete_all(0)
-    
+    @sci.set_stc_focus true
   end
   def changeto(page)
     save_page
@@ -269,6 +271,7 @@ class CodeBlock < Panel
     @sci.empty_undo_buffer()
     @sci.set_save_point
     @dirty=false
+    @sci.set_stc_focus true
   end
   def insert(p)
     @pages.insert(p,CodePage.new)

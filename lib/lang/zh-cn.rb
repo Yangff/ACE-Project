@@ -1,19 +1,21 @@
 #encoding:utf-8
 LANG={
-  :TITLE=>"ACE Prolect",
+  :TITLE=>"ACE Project",
   :CREATEINGProject=>"正在创建工程",
   :OPENINGProject=>"正在打开工程",
   :MENU=>
     {
-      :FILE=>"文件(&F)",
-      :EDIT=>"编辑(&E)",
-      :MODE=>"模式(&M)",
-      :DRAW=>"绘图(&D)",
-      :BILLY=>"比例(&S)",
-      :TOOLS=>"工具(&T)",
-      :TEST=>"测试(&T)",
+      :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:PLUGINS,:HELP],
+      :VALUES=>[:FILEs,:EDITs,:MODEs,:DRAWs,:BILLYs,:TOOLSs,:TESTs,:PLUGINSs,:HELPs],
+      :FILE   =>"文件(&F)",
+      :EDIT   =>"编辑(&E)",
+      :MODE   =>"模式(&M)",
+      :DRAW   =>"绘图(&D)",
+      :BILLY  =>"比例(&S)",
+      :TOOLS  =>"工具(&T)",
+      :TEST   =>"测试(&T)",
       :PLUGINS=>"插件(&P)",
-      :HELP=>"帮助(&H)",
+      :HELP   =>"帮助(&H)",
       :FILEs=>[
       [:NEW,"新建项目(&N)\tCtrl+N",],
       [:OPEN,"打开项目(&O)\tCtrl+O",],
@@ -33,13 +35,58 @@ LANG={
       [:DEL,"删除\tDel",],
       ], 
       :MODEs=>[
-      
+      [:MAP,"地图\tF5"],
+      [:EVENT,"事件\tF6"],
+      [:AREA,"区域\tF7"],
       ],
-      
+      :DRAWs=>[
+      [:PANCEL,"铅笔(&P)"],
+      [:RECT,"矩形(&R)"],
+      [:ECC,"椭圆(&E)"],
+      [:FLORDFILL,"油漆桶(&F)"],
+      [:SHADOW,"阴影(&S)"],
+      ],
+      :BILLYs=>[
+        ["OO","1/1"],
+        ["OT","1/2"],
+        ["OF","1/4"],
+        ["OE","1/8"],
+      ],
+      :TOOLSs=>[
+        [:DATABASE,"数据库(&D)\tF9"],
+        [:MEDIA,"媒体库(&R)\tF10"],
+        [:SCRIPT,"脚本编辑器(&S)\tF11"],
+        [:SCRIPTGuide,"脚本导航(&G)"],
+        [:SOUND,"声音测试(&T)"],
+        [:CHARACTER,"角色生成(&C)"],
+        [:separator,""],
+        [:CHARACTER,"选项(&O)"],
+      ],
+      :TESTs=>[
+        [:RUN,"运行(&T)\tF12"],
+        [:separator,""],
+        [:FULL,"全屏模式(&F)"],
+        [:CONTROL,"启用控制台(&C)"],
+        [:separator,""],
+        [:OPENGame,"打开游戏文件夹(&O)"],
+      ],
+      :PLUGINSs=>
+      [
+        [:GETMORE,"获取插件(&G)"],
+        [:separator,""],
+      ],
+      :HELPs=>[
+        [:LOOKHELP,"查看帮助(&C)\tF1"],
+        [:UPDATE,"检查更新(&U)"],
+        [:separator,""],
+        [:ABOUT,"关于 ACE-Project"],
+      ],
+        
       :CODEPOPs=>[
       [:CUT,"剪切(&X)\tCtrl+X",],
       [:COPY,"复制(&C)\tCtrl+C",],
       [:PASTE,"粘贴(&V)\tCtrl+X",],
+      [:PASTE,"全选(&A)\tCtrl+A",],
       [:separator,""],
       [:FIND,"查找（&F)\tCtrl+F"],
       [:FINDNEXT,"下一个\tF3"],
