@@ -172,12 +172,12 @@ class CodeBlock < Panel
     @popmenu.evt_menu 1,proc{|evt|@sci.copy}
     @popmenu.evt_menu 2,proc{|evt|@sci.paste}
     @popmenu.evt_menu 3,proc{|evt|@sci.select_all}
-    @popmenu.evt_menu 4,proc{|evt|@keyWordDialog.clear_all;@keyWordDialog.show_modal}
+    @popmenu.evt_menu 4,proc{|evt|@keyWordDialog=KeywordsDialog.new(window,self);@keyWordDialog.show_modal;@keyWordDialog.destroy}
     @popmenu.evt_menu 5,proc{|evt|searchNext}
     @popmenu.evt_menu 6,proc{|evt|changeto(2)}
     #Integer search_next(Integer flags, String text)
-    @keyWordDialog=KeywordsDialog.new(window,self)
-    @keyWordDialogWhole=KeywordsDialog.new(window,self,1)
+    #@keyWordDialog=KeywordsDialog.new(window,self)
+    #@keyWordDialogWhole=KeywordsDialog.new(window,self,1)
     @window=window
     #
     if auto.size==0
@@ -188,6 +188,7 @@ class CodeBlock < Panel
     end
     impolitechangeto(@page)
   end
+
   def searchWrong(text)
     Wx::MessageDialog.new(nil, LANG[:CODEBLOCK][text],LANG[:CODEBLOCK][:SearchWrong]).show_modal
   end

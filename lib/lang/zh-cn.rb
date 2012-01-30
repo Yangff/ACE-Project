@@ -110,4 +110,12 @@ LANG={
         :GUIDE=>"脚本导航",
 		:FIND=>"查找",
       },
+      :OUTPUT=>"输出",
+    :NEWProject=>
+      {
+        :TITLE =>"新建项目",
+        :FONAME =>"文件夹名：",
+        :TINAME =>"游戏标题："
+      },
+    :NORMALFONT=>Font.new(9,FONTFAMILY_DEFAULT,FONTSTYLE_NORMAL,FONTWEIGHT_NORMAL,false,"微软雅黑"),
 }

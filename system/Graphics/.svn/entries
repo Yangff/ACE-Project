@@ -1,0 +1,112 @@
+10
+
+dir
+0
+https://rmvxace.googlecode.com/svn/trunk/ACE-Project/lib/system/Graphics
+https://rmvxace.googlecode.com/svn
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+33056fa9-923e-bfff-f0b1-4b3913ba89ba
+
+Animations
+dir
+
+
+
+add
+
+Battlebacks1
+dir
+
+
+
+add
+
+Battlebacks2
+dir
+
+
+
+add
+
+Battlers
+dir
+
+
+
+add
+
+Characters
+dir
+
+
+
+add
+
+Faces
+dir
+
+
+
+add
+
+Parallaxes
+dir
+
+
+
+add
+
+Pictures
+dir
+
+
+
+add
+
+System
+dir
+
+
+
+add
+
+Tilesets
+dir
+
+
+
+add
+
+Titles1
+dir
+
+
+
+add
+
+Titles2
+dir
+
+
+
+add
+

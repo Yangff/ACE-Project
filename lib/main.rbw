@@ -23,17 +23,18 @@ require "rpg/ProjectManager"
 
 ProjectManager.init
 ProjectManager.programURL=Dir.pwd
-
+$DEBUG=true
 #Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(0,Dir.pwd  , "ACE-Project", 0) 
 def msgbox(code,title="ACE-Project",hwnd=0,unit=0)
-  return Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(hwnd,code, title, unit) 
+  return Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(hwnd,code, title, unit)  if $DEBUG
 end 
 
 class RMApp < App
    def on_init   
      $mainWindow = RMMain.new
      $mainWindow.show
-   end  
+   end
+
 end
 $mainApp=RMApp.new
 
