@@ -11,7 +11,7 @@ class ScriptGuide < Panel
   def initialize(parent, options = {})
     super(parent, options.merge!(:size => [200, -1]))
     arrange_vertically do 
-      @lb=ListBox.new(self)
+      @lb=ListCtrl.new(self)
       add @lb,:proportion => 1  
     end
   end

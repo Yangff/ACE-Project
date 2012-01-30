@@ -5,8 +5,8 @@ LANG={
   :OPENINGProject=>"正在打开工程",
   :MENU=>
     {
-      :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:PLUGINS,:HELP],
-      :VALUES=>[:FILEs,:EDITs,:MODEs,:DRAWs,:BILLYs,:TOOLSs,:TESTs,:PLUGINSs,:HELPs],
+      :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
+      :VALUES=>[:FILEs,:EDITs,:MODEs,:DRAWs,:BILLYs,:TOOLSs,:TESTs,:WINDOWSs,:PLUGINSs,:HELPs],
       :FILE   =>"文件(&F)",
       :EDIT   =>"编辑(&E)",
       :MODE   =>"模式(&M)",
@@ -14,6 +14,7 @@ LANG={
       :BILLY  =>"比例(&S)",
       :TOOLS  =>"工具(&T)",
       :TEST   =>"测试(&T)",
+      :WINDOWS=>"窗口(&W)",
       :PLUGINS=>"插件(&P)",
       :HELP   =>"帮助(&H)",
       :FILEs=>[
@@ -70,6 +71,9 @@ LANG={
         [:separator,""],
         [:OPENGame,"打开游戏文件夹(&O)"],
       ],
+      :WINDOWSs=>[
+        [:WORKING,"施工重地，非请勿入"],
+      ],
       :PLUGINSs=>
       [
         [:GETMORE,"获取插件(&G)"],
@@ -119,3 +123,33 @@ LANG={
       },
     :NORMALFONT=>Font.new(9,FONTFAMILY_DEFAULT,FONTSTYLE_NORMAL,FONTWEIGHT_NORMAL,false,"微软雅黑"),
 }
+$APACHEV2=<<EOF
+Based on RPG MAKER VX ACE Version 1.0.0 Copyright (C) 2011 Enterbrain , Inc. / 
+Yoji Ojima
+Apache License
+http://www.apache.org/licenses/LICENSE-2.0
+wxRuby2
+Copyright (c) 2004-2007 wxRuby Development Team
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+SOFTWARE.
+Enterbrain License
+Ruby Version 1.9.2 Copyright (C) 1993-2010 Yukihiro Matsumoto
+libogg Version 1.2.2 Copyright (C) 2002 Xiph.Org Foundation
+libvorbis Version 1.3.2 Copyright (C) 2002-2008 Xiph.Org Foundation
+libtheora Version 1.1.1 Copyright (C) 2002-2009 Xiph.Org Foundation
+libtheoraplayer Version 1.0 Copyright (C) 2008-2009 Kresimir Spes <kreso@cateia.com>
+This software is based in part on the work of the Independent JPEG Group.
+EOF
