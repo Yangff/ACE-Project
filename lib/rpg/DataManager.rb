@@ -1,3 +1,4 @@
+ module DataManager
   #--------------------------------------------------------------------------
   # ● 读取普通的数据库
   #--------------------------------------------------------------------------
@@ -33,3 +34,4 @@
     save_data($data_system            ,"Data/System.rvdata2")
     save_data($data_mapinfos          ,"Data/MapInfos.rvdata2")
   end
+ end

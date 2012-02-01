@@ -1,4 +1,38 @@
-module Flowable
+
+class Table
+  class <<self
+    def str2fix(str)
+      case str.size
+      when 1
+        str.unpack("c")[0]
+      when 2
+        str.unpack("s")[0]
+      when 4
+        str.unpack("v")[0]
+      end
+    end
+
+    def fix2str(fix)
+      str = [fix].pack("s")
+      return str
+    end
+
+    def str2int(str)
+      return str.unpack("L")[0]
+    end
+
+    def int2str(int)
+      return [int].pack("L")
+    end
+
+    def str2float(str)
+      return str.unpack("d")[0]
+    end
+
+    def float2str(float)
+      return [float].pack("d")
+    end
+  end
   def str2fix(str)
     case str.size
     when 1
@@ -30,10 +64,6 @@ module Flowable
   def float2str(float)
     return [float].pack("d")
   end
-  
-end
-class Table
-  include Flowable
   def initialize(*arg)
     tempAry=arg
     txsize = tempAry[0]

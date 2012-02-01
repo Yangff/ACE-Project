@@ -3,6 +3,7 @@ LANG={
   :TITLE=>"ACE Project",
   :CREATEINGProject=>"正在创建工程",
   :OPENINGProject=>"正在打开工程",
+  :DIRECTIONEXITS=>"目录已存在",
   :MENU=>
     {
       :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
@@ -119,7 +120,10 @@ LANG={
       {
         :TITLE =>"新建项目",
         :FONAME =>"文件夹名：",
-        :TINAME =>"游戏标题："
+        :TINAME =>"游戏标题：",
+        :PROJURL =>"项目位置",
+        :YES =>"确定(&S)",
+        :NO =>"取消(&C)",
       },
     :NORMALFONT=>Font.new(9,FONTFAMILY_DEFAULT,FONTSTYLE_NORMAL,FONTWEIGHT_NORMAL,false,"微软雅黑"),
 }

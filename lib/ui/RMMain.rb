@@ -1,17 +1,4 @@
-module Helpers
-  module_function
-  def createMenu(menu,lang,fLAG,hash={})
-    for i in lang
-      if (i[0]==:separator)
-        menu.append_separator()
-      else
-        menu.append(fLAG.size, i[1],i[0].to_s)
-        hash[i[0]]=fLAG.size
-        fLAG<<i[0]
-      end
-    end    
-  end
-end
+
 class Wx::StaticText
   alias _old_initialize_ initialize
   def initialize(*args)
@@ -24,20 +11,60 @@ class Wx::StaticText
       }}
   end
 end
-
 class RMMain < Frame
   class NewProject < Dialog
     def initialize(parent)
       l=LANG[:NEWProject]
       super(parent,-1,:title=>l[:TITLE],:size=>[479,178],:style=>Wx::CAPTION|Wx::SYSTEM_MENU|Wx::CLOSE_BOX|TRANSPARENT_WINDOW)
-      @fonames =StaticText.new(self,:label=>l[:FONAME],:pos=>Wx::Point.new(20,12),:style=>TRANSPARENT_WINDOW|CLIP_CHILDREN )
-      @titles =StaticText.new(self,:label=>l[:TINAME],:pos=>Wx::Point.new(182,12),:style=>TRANSPARENT_WINDOW|CLIP_CHILDREN )
+      @fonamesl =StaticText.new(self,:label=>l[:FONAME],:pos=>Wx::Point.new(13,12),:style=>TRANSPARENT_WINDOW|CLIP_CHILDREN )
+      @fonames  = TextCtrl.new(self,:value=>ProjectManager.getProjectAutoNewName,:pos=>Wx::Point.new(13,28),:size=>Size.new(154,23))
+      @titlesl  =StaticText.new(self,:label=>l[:TINAME],:pos=>Wx::Point.new(181,12),:style=>TRANSPARENT_WINDOW|CLIP_CHILDREN )
+      @titles   = TextCtrl.new(self,:value=>ProjectManager.getProjectAutoTitle,:pos=>Wx::Point.new(181,28),:size=>Size.new(280,23))
+      @projurll =StaticText.new(self,:label=>l[:PROJURL],:pos=>Wx::Point.new(13,60),:style=>TRANSPARENT_WINDOW|CLIP_CHILDREN )
+      @projurl  = TextCtrl.new(self,:value=>ProjectManager.getProjectAutoURL,:pos=>Wx::Point.new(13,77),:size=>Size.new(417,23))
+      @projurlb = Button.new(self,:label=>"...",:pos=>Wx::Point.new(434,77),:size=>Size.new(28,23))
+      @yes = Button.new(self,:label=>l[:YES],:pos=>Wx::Point.new(280,117),:size=>Size.new(88,23));@yes.set_default()
+      @no = Button.new(self,:label=>l[:NO],:pos=>Wx::Point.new(375,117),:size=>Size.new(88,23))
       evt_paint {|evt|paint{|dc|dc.gradient_fill_linear(get_client_rect(),Colour.new(228,240,252),Colour.new(196,208,220),Wx::SOUTH)}}
+      @oldfod=ProjectManager.getProjectAutoNewName
+      evt_button(@no.id){self.close}
+      evt_button(@yes.id){ProjectManager.create(@fonames.get_value,@projurl.get_value,@titles.get_value) {|t,p| print "#{t} #{p}"};self.close}
+      evt_text(@fonames.id){|evt| 
+        url=@fonames.get_value()
+        url.gsub!(/\//){""};url.gsub!(/\\/){""};url.gsub!(/\./){""};url.gsub!(/\\/){""};url.gsub!(/:/){""};url.gsub!(/\*/){""};url.gsub!(/\?/){""};url.gsub!(/"/){""};url.gsub!(/''/){""}
+        #puts url
+        @fonames.change_value(url)
+        @titles.set_value(url)
+        url=@projurl.get_value().split(/\\/);
+
+        oldfod="";index=0
+        for i in 0...url.size
+        
+          j=url.size-i-1
+          if url[j].to_s!=""
+             oldfod=url[j];index=j
+            break
+          end
+        end
+        if oldfod==@oldfod
+          url[index]=@fonames.get_value()
+        else
+          url[index+1]=@fonames.get_value()
+        end
+        @oldfod=@fonames.get_value()
+        @projurl.set_value(pathary2path(url))
+        }
     end
     def show_modal
       center(Wx::BOTH)
       super
     end
+  end
+  def reset(proj)
+    set_title ProjectManager.title + " [#{proj}] - " + LANG[:TITLE]
+  end
+  def changeto
+    #TODO :Change to project
   end
   def initialize(open="")
     super(nil,:title=>ProjectManager.title,:size=>[800,600])
@@ -99,7 +126,7 @@ class RMMain < Frame
   end
   def onMenuNew
     if ProjectManager.saved==false
-      #TODO :ASK FOR SAVE
+      #TODO :ASK FOR SAVE#
       print "TODO :ASK FOR SAVE"
     end
     @newproj =NewProject.new(self)

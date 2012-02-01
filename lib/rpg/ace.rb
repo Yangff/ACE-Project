@@ -1,13 +1,32 @@
-def load_data(filename)
-  File.open(filename, "rb") { |f|
-    obj = Marshal.load(f)
-  }
-  obj
+class Color
+  attr_accessor :red
+  attr_accessor :green
+  attr_accessor :blue
+  attr_accessor :alpha
+  def initialize(r,g,b,a)
+    @red=r;@green=g;@blue=b;@alpha=a
+  end
+  def self._load(data)
+    return Color.new(H.str2float(data[0,8]),H.str2float(data[8,16]),H.str2float(data[16,24]),H.str2float(data[24,32]))
+  end
+  def _dump(aDepth)
+    return H.float2str(@red)<<H.float2str(@green)<<H.float2str(@blue)<<H.float2str(@alpha)
+  end
 end
-def save_data(obj, filename) 
-  File.open(filename, "wb") { |f|
-    Marshal.dump(obj, f)
-  }
+class Tone
+  attr_accessor :red
+  attr_accessor :green
+  attr_accessor :blue
+  attr_accessor :gray
+  def initialize(r,g,b,gr)
+    @red=r;@green=g;@blue=b;@gray=gr
+  end  
+  def self._load(data)
+    return Color.new(H.str2float(data[0,8]),H.str2float(data[8,16]),H.str2float(data[16,24]),H.str2float(data[24,32]))
+  end
+  def _dump(aDepth)
+    return H.float2str(@red)<<H.float2str(@green)<<H.float2str(@blue)<<H.float2str(@gray)
+  end
 end
 class RPG
   
