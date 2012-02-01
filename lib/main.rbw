@@ -1,8 +1,7 @@
 $:.push(Dir.pwd)
 #http://wxruby.rubyforge.org/wxrubydoc.html
 #高亮：StyledTextCtrl
-require 'Win32API'
-$sci=Win32API.new('kernel32','LoadLibraryW','p','i').call("SciLexer.DLL")
+
 require 'rubygems'
 require "win32api"
 require "wx"
@@ -39,25 +38,6 @@ module Helpers
       end
     end    
   end
-end
-H=Helpers
-def debugOut(data)
-  File.open("#{Config.ProgramPath}debug.cfg", "ab") { |f|
-    f.write(data)
-  }
-end
-def load_data(filename)
-  obj=nil
-  File.open(filename, "rb") { |f|
-    obj = Marshal.load(f)
-  }
-  return obj
-end
-def save_data(obj, filename) 
-  File.open(filename, "wb") { |f|
-    Marshal.dump(obj, f)
-  }
-end
 def copyall(src,target)
   list=Dir.entries(src)
   list.each_index do |x| 
@@ -79,6 +59,27 @@ def pathary2path(path)
   end
   return path1
 end
+end
+H=Helpers
+include H 
+def debugOut(data)
+  File.open("#{Config.ProgramPath}debug.cfg", "ab") { |f|
+    f.write(data)
+  }
+end
+def load_data(filename)
+  obj=nil
+  File.open(filename, "rb") { |f|
+    obj = Marshal.load(f)
+  }
+  return obj
+end
+def save_data(obj, filename) 
+  File.open(filename, "wb") { |f|
+    Marshal.dump(obj, f)
+  }
+end
+
 module Config
   @@config={:ver=>"0.0.1 b03",:lastOpen=>"(none)"}
   path=Dir.pwd
@@ -89,7 +90,15 @@ module Config
   path1=pathary2path(path)
   @@programPath = path1
   @@config[:savePath] = path1+"projects\\"
-  
+  def self.set_auto_path(p)
+    @@config[:savePath]=p
+  end
+  def self.set_last_open(p)
+    @@config[:lastOpen]=p
+  end
+  def self.last_open
+    @@config[:lastOpen]
+  end
   def self.init
     if File.exists?(@@programPath+"config.cfg")
       config=load_data(@@programPath+"config.cfg")
@@ -115,7 +124,6 @@ end
 
 Config.init
 ProjectManager.init
-ProjectManager.programURL=Dir.pwd
 $DEBUG=true
 #Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(0,Dir.pwd  , "ACE-Project", 0) 
 def msgbox(code,title="ACE-Project",hwnd=0,unit=0)
@@ -125,6 +133,9 @@ end
 class RMApp < App
    def on_init   
      $mainWindow = RMMain.new
+     if Config.last_open!="(none)"
+       ProjectManager.open(Config.last_open){|t,p|$mainWindow.onOpening(t,p)}
+     end
      $mainWindow.show
    end
 

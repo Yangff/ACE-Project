@@ -3,12 +3,7 @@ module ProjectManager
   ERRORS = {
     :DIRECTIONEXITS => 1
   }
-  def self.programURL=(url)
-    @@programURL=url
-  end
-  def self.programURL
-    return @programURL
-  end
+
   def self.projectURL=(url)
     @@projectURL=url
   end
@@ -28,9 +23,10 @@ module ProjectManager
     return @@title
   end
   def self.init
-    @@title=LANG[:TITLE]
+    @@title="(none)"#LANG[:TITLE]
     @@saved=true
     @@projectName=nil
+    @@projectPath=""
   end
   def self.create(name,url,title,&progress)
     progress.call(LANG[:CREATEINGProject],0)
@@ -57,24 +53,40 @@ module ProjectManager
       File.rename(url+"Game.exe","#{url+name}.exe")
       self.open(proj) {|t,v| progress.call(t,v)}
     rescue
-      
+      self.close
     end
   end
   def self.open(proj,&progress)
-    self.close unless @@projectName.nil?
-    p=proj.split(/\\/)
-    p.delete_at(p.size-1)
-    p=pathary2path(p)
-    Dir.chdir(p)
-    @@projectConfig=load_data(proj)
-    @@title=@@projectConfig[:title]
-    $mainWindow.reset(proj)
-    progress.call(LANG[:OPENINGProject],3)
-    DataManager.load_normal_database()
-    progress.call(LANG[:OPENINGProject],33)
-    $mainWindow.changeto()
-    progress.call(LANG[:OPENINGProject],100)
-    @@saved=true
+    begin
+      self.close unless @@projectName.nil?
+      return unless @@projectName.nil?
+      p=proj.split(/\\/)
+      p.delete_at(p.size-1)
+      p=pathary2path(p)
+      proc{self.close;progress.call(sprintf(LANG[:NOEXIT],proj),0);Config.set_last_open("(none)"); return 0 }.call unless FileTest.directory?(p)
+      Dir.chdir(p)
+      @@projectPath=p
+      p=p.split(/\\/)
+      p.delete_at(p.size-1)
+      p=pathary2path(p)
+      Config.set_auto_path(p)
+      @@projectConfig=load_data(proj)
+      @@title=@@projectConfig[:title]
+      $mainWindow.reset(proj)
+      progress.call(LANG[:OPENINGProject],3)
+      DataManager.load_normal_database()
+      progress.call(LANG[:OPENINGProject],33)
+      $mainWindow.changeto()
+      progress.call(LANG[:OPENINGProject],100)
+      @@saved=true
+      Config.set_last_open(proj)
+    rescue
+      self.close
+    end
+  end
+  def self.close
+    @@title="(none)"
+    $mainWindow.reset("(none)")
   end
   def self.getProjectAutoNewName
     return getProjectAutoTitle
@@ -95,5 +107,9 @@ module ProjectManager
       i+=1
     end
     return "Project#{i}"
+  end
+  
+  def self.projectPath
+    return @@projectPath
   end
 end

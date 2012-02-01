@@ -28,7 +28,7 @@ class RMMain < Frame
       evt_paint {|evt|paint{|dc|dc.gradient_fill_linear(get_client_rect(),Colour.new(228,240,252),Colour.new(196,208,220),Wx::SOUTH)}}
       @oldfod=ProjectManager.getProjectAutoNewName
       evt_button(@no.id){self.close}
-      evt_button(@yes.id){ProjectManager.create(@fonames.get_value,@projurl.get_value,@titles.get_value) {|t,p| print "#{t} #{p}"};self.close}
+      evt_button(@yes.id){ProjectManager.create(@fonames.get_value,@projurl.get_value,@titles.get_value) {|t,p| $mainWindow.onOpening(t,p)};self.close}
       evt_text(@fonames.id){|evt| 
         url=@fonames.get_value()
         url.gsub!(/\//){""};url.gsub!(/\\/){""};url.gsub!(/\./){""};url.gsub!(/\\/){""};url.gsub!(/:/){""};url.gsub!(/\*/){""};url.gsub!(/\?/){""};url.gsub!(/"/){""};url.gsub!(/''/){""}
@@ -106,7 +106,11 @@ class RMMain < Frame
     print "Welcome to use AEC-Project!"
     print "Debugger :http://bbs.66rpg.com/forum.php?mod=viewthread&tid=186955"
     #@mgr.evt_paint {|evt|paint{|dc| dc.gradient_fill_linear(get_client_rect(),Colour.new(228,240,252),Colour.new(196,208,220),Wx::SOUTH)};evt.skip(true)}
-    
+    reset("(none)")
+
+  end
+  def onOpening(t,p)
+    print "#{t} #{p}"
   end
   def initializemenu
     menuBar = Wx::MenuBar.new()
@@ -114,7 +118,7 @@ class RMMain < Frame
     @menuHash={}
     for i in 0...LANG[:MENU][:KEYS].size
       if LANG[:MENU][:KEYS][i].is_a?(Symbol) and LANG[:MENU][:VALUES][i].is_a?(Symbol) and LANG[:MENU][LANG[:MENU][:VALUES][i]].is_a?(Array)
-        proc {$SAFE=2;eval("@menu#{LANG[:MENU][:KEYS][i].to_s} = Wx::Menu.new();Helpers.createMenu(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:VALUES][i].to_s}],@FLAG,@menuHash);menuBar.append(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:KEYS][i].to_s}])")}.call()
+        proc {$SAFE=2;eval("@menu#{LANG[:MENU][:KEYS][i].to_s} = Wx::Menu.new();H.createMenu(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:VALUES][i].to_s}],@FLAG,@menuHash);menuBar.append(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:KEYS][i].to_s}])")}.call()
       else
         puts "Error on Loading Menu Language File #{LANG[:MENU][:KEYS][i]}\r\n"
       end
@@ -133,9 +137,7 @@ class RMMain < Frame
     @newproj.show_modal
     @newproj.destroy
   end
-  def title
-    set_title(ProjectManager.title)
-  end
+
 
   attr_reader :mgr,:codeeditor
 end

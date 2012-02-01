@@ -4,6 +4,7 @@ LANG={
   :CREATEINGProject=>"正在创建工程",
   :OPENINGProject=>"正在打开工程",
   :DIRECTIONEXITS=>"目录已存在",
+  :NOEXIT=>"工程[%s]不存在！",
   :MENU=>
     {
       :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
