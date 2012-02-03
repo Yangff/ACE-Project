@@ -19,6 +19,7 @@ require "rpg/Table"
 require 'uri'
 require "rpg/DataManager"
 require "rpg/ProjectManager"
+require 'bin/TemplateManager'
 module Helpers
   module_function
   def str2float(str)
@@ -38,6 +39,31 @@ module Helpers
       end
     end    
   end
+def removeall(src)
+  list=Dir.entries(src)
+  list.each_index do |x| 
+    next if list[x]=="." or list[x]==".."
+    if File.directory?(src+list[x])
+      removeall(src+list[x]+"\\")
+      Dir.delete(src+list[x]+"\\")
+    else
+      File.delete(src+list[x])
+    end
+    
+  end  
+end
+def errorMsg(msg)
+  print msg
+  return false
+end
+def succeedMsg(msg)
+  print msg
+  return false
+end
+def normalMsg(msg)
+  print msg
+  return false
+end
 def copyall(src,target)
   list=Dir.entries(src)
   list.each_index do |x| 
@@ -62,6 +88,8 @@ end
 end
 H=Helpers
 include H 
+$m=Marshal
+$f=File
 def debugOut(data)
   File.open("#{Config.ProgramPath}debug.cfg", "ab") { |f|
     f.write(data)
@@ -99,7 +127,7 @@ module Config
   def self.last_open
     @@config[:lastOpen]
   end
-  def self.init
+  def self._init
     if File.exists?(@@programPath+"config.cfg")
       config=load_data(@@programPath+"config.cfg")
       if config[:ver]!=@@config[:ver]
@@ -122,8 +150,9 @@ module Config
   end
 end
 
-Config.init
+Config._init
 ProjectManager.init
+TemplateManager._init
 $DEBUG=true
 #Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(0,Dir.pwd  , "ACE-Project", 0) 
 def msgbox(code,title="ACE-Project",hwnd=0,unit=0)
@@ -132,7 +161,9 @@ end
 
 class RMApp < App
    def on_init   
+     
      $mainWindow = RMMain.new
+     $exited=false
      if Config.last_open!="(none)"
        ProjectManager.open(Config.last_open){|t,p|$mainWindow.onOpening(t,p)}
      end
@@ -145,4 +176,9 @@ $mainApp=RMApp.new
 #$plugins=Plugins.new($plugins)
 #$plugins.start($mainApp,$mainWindow)
 $mainApp.main_loop
+
+ 
+ 
+$exited=true
 Config.save
+ProjectManager.close

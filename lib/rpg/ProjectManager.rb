@@ -3,7 +3,7 @@ module ProjectManager
   ERRORS = {
     :DIRECTIONEXITS => 1
   }
-
+  @@projfile=""
   def self.projectURL=(url)
     @@projectURL=url
   end
@@ -28,7 +28,7 @@ module ProjectManager
     @@projectName=nil
     @@projectPath=""
   end
-  def self.create(name,url,title,&progress)
+  def self.create(name,url,title,template,&progress)
     progress.call(LANG[:CREATEINGProject],0)
     begin
       
@@ -43,7 +43,7 @@ module ProjectManager
       progress.call(LANG[:CREATEINGProject],40)
       File.open(ini,"wb"){|f|f.write("[Game]\n\rRTP=RPGVXAce\n\rLibrary=System\\RGSS300.dll\n\rScripts=Data\\Scripts.rvdata2\n\rTitle=#{title}\n\r")}
       progress.call(LANG[:CREATEINGProject],50)
-      copyall Config.ProgramPath + "system\\",url
+      copyall Config.ProgramPath + "templates\\#{template}\\",url
       progress.call(LANG[:CREATEINGProject],90)
       s=load_data(url+"Data\\System.rvdata2")
       s.japanese =false
@@ -60,10 +60,16 @@ module ProjectManager
     begin
       self.close unless @@projectName.nil?
       return unless @@projectName.nil?
+      if File.exists?(proj+".lock") #if File.exists?(@@projfile+".lock")
+        self.close
+        return errorMsg(sprintf(LANG[:OPENED],proj))
+      end
+
       p=proj.split(/\\/)
       p.delete_at(p.size-1)
       p=pathary2path(p)
       proc{self.close;progress.call(sprintf(LANG[:NOEXIT],proj),0);Config.set_last_open("(none)"); return 0 }.call unless FileTest.directory?(p)
+      File.open(proj+".lock","wb"){|f|f.write("locked")}
       Dir.chdir(p)
       @@projectPath=p
       p=p.split(/\\/)
@@ -72,6 +78,7 @@ module ProjectManager
       Config.set_auto_path(p)
       @@projectConfig=load_data(proj)
       @@title=@@projectConfig[:title]
+      @@projfile=proj
       $mainWindow.reset(proj)
       progress.call(LANG[:OPENINGProject],3)
       DataManager.load_normal_database()
@@ -85,8 +92,9 @@ module ProjectManager
     end
   end
   def self.close
-    @@title="(none)"
-    $mainWindow.reset("(none)")
+    @@title="(none)" 
+    $mainWindow.reset("(none)") unless $mainWindow.nil? or $exited
+    File.delete(@@projfile + ".lock") if File.exists?(@@projfile+".lock") #.exits?()
   end
   def self.getProjectAutoNewName
     return getProjectAutoTitle

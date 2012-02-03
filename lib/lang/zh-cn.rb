@@ -5,10 +5,13 @@ LANG={
   :OPENINGProject=>"正在打开工程",
   :DIRECTIONEXITS=>"目录已存在",
   :NOEXIT=>"工程[%s]不存在！",
+  :OPENED=>"工程[%s]已经打开了！！",
   :MENU=>
     {
-      :KEYS=>[:FILE,:EDIT,:MODE,:DRAW,:BILLY,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
-      :VALUES=>[:FILEs,:EDITs,:MODEs,:DRAWs,:BILLYs,:TOOLSs,:TESTs,:WINDOWSs,:PLUGINSs,:HELPs],
+                        #:MODE,:DRAW,:BILLY,
+      :KEYS=>[:FILE,:EDIT,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
+                            #,:MODEs,:DRAWs,:BILLYs
+      :VALUES=>[:FILEs,:EDITs,:TOOLSs,:TESTs,:WINDOWSs,:PLUGINSs,:HELPs],
       :FILE   =>"文件(&F)",
       :EDIT   =>"编辑(&E)",
       :MODE   =>"模式(&M)",
@@ -26,6 +29,9 @@ LANG={
       [:SAVE,"保存项目(&S)\tCtrl+S",],
       [:separator,""],
       [:PACK,"制作游戏发行包(&M)",],
+      [:separator,""],
+      [:ADDTEMPLATE,"添加模板(&T)"],
+      [:MANTEMPLATE,"管理模板(&T)"],
       [:separator,""],
       [:EXIT,"关闭(&X)"],
       ],
@@ -125,8 +131,14 @@ LANG={
         :PROJURL =>"项目位置",
         :YES =>"确定(&S)",
         :NO =>"取消(&C)",
+        :TEMPLATEN => "选择模板：",
+        :NOSELECTION=>"乃真的忍心人家光光的……不给人一个模板吗？"
       },
     :NORMALFONT=>Font.new(9,FONTFAMILY_DEFAULT,FONTSTYLE_NORMAL,FONTWEIGHT_NORMAL,false,"微软雅黑"),
+    :TEMPLATEOPENER=>{
+      :MESSAGE=>"请选择要添加的模板文件",
+      :WILDCARD=>"模板文件(*.tpl)|*.tpl",
+    },
 }
 $APACHEV2=<<EOF
 Based on RPG MAKER VX ACE Version 1.0.0 Copyright (C) 2011 Enterbrain , Inc. / 
