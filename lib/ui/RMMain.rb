@@ -44,9 +44,23 @@ class RMMain < Frame
       @projurlb = Button.new(self,:label=>"...",:pos=>Wx::Point.new(434,77+yxo),:size=>Size.new(28,23))
       @yes = Button.new(self,:label=>l[:YES],:pos=>Wx::Point.new(280,117+yxo),:size=>Size.new(88,23));@yes.set_default()
       @no = Button.new(self,:label=>l[:NO],:pos=>Wx::Point.new(375,117+yxo),:size=>Size.new(88,23))
+      t=@FoOpener = DirDialog.new(self,LANG[:FOOPENER][:MESSAGE],:style=>DD_DEFAULT_STYLE|DD_CHANGE_DIR)
+      
+      t.set_path(Dir.pwd)
       evt_paint {|evt|paint{|dc|dc.gradient_fill_linear(get_client_rect(),Colour.new(228,240,252),Colour.new(196,208,220),Wx::SOUTH)}}
       @oldfod=ProjectManager.getProjectAutoNewName
       evt_button(@no.id){self.close}
+      evt_button(@projurlb.id){
+        p=@projurl.get_value.split(/\\/);p.delete_at(p.size-1)
+        @FoOpener.set_path(pathary2path(p))
+        if @FoOpener.show_modal==ID_OK
+          path=@FoOpener.get_path()
+          path.gsub!(/\//){"\\"}
+          path+="\\" if path[path.size-1]!="\\"
+          path+=@oldfod
+          @projurl.set_value(path)
+        end
+      }
       evt_button(@yes.id){
         if @templatec.get_selections().size<=0
         errorMsg(l[:NOSELECTION]) 

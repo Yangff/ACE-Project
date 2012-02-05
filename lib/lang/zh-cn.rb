@@ -143,6 +143,9 @@ LANG={
       :MESSAGE=>"请选择要添加的模板文件",
       :WILDCARD=>"模板文件(*.tpl)|*.tpl",
     },
+    :FOOPENER=>{
+      :MESSAGE=>"请选择工程保存的目录"
+    },
 }
 $APACHEV2=<<EOF
 Based on RPG MAKER VX ACE Version 1.0.0 Copyright (C) 2011 Enterbrain , Inc. / 
