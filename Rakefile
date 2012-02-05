@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.author = ''
   s.email = ''
   # s.executables = ['your_executable_here']
-  s.files = %w(LICENSE README Rakefile) + Dir.glob("{bin,lib,spec}/**/*")
+  s.files = %w(LICENSE README Rakefile) + Dir.glob("{bin,lib,spec,ui,lang,rpg}/**/*")
   s.require_path = "lib"
   s.bindir = "bin"
 end

@@ -1,4 +1,4 @@
-
+require 'zlib'
 class Wx::StaticText
   alias _old_initialize_ initialize
   def initialize(*args)
@@ -11,6 +11,7 @@ class Wx::StaticText
       }}
   end
 end
+
 class RMMain < Frame
   class NewProject < Dialog
     def initialize(parent)
@@ -91,10 +92,26 @@ class RMMain < Frame
   end
   def changeto
     #TODO :Change to project
+    #SHOW Windows
+    #ENABLE MENU
+    @mgr.get_pane(@ctrl).show
+    scripts=[nil]
+    for i in $scripts
+      scripts<<CodePage.new(i[1],Zlib::Inflate.inflate(i[2]),[])
+      #print Zlib::Inflate.inflate(i[2])
+    end
+    @codeeditor.scip.clear(scripts)
+    @scriptguide.clear(scripts)
+    onChangedPage
+    @mgr.update
+  end
+  def close
+    #HIDE Windows
+    #DISABLE MENU
   end
   def initialize(open="")
-    super(nil,:title=>ProjectManager.title,:size=>[800,600])
-    initializemenu
+    super(nil,:title=>ProjectManager.title,:size=>[1115,700])
+    
     #@textbox=CodeBlock.new(self)
     @mgr = AuiManager.new()
     @mgr.set_managed_window(self)
@@ -102,8 +119,9 @@ class RMMain < Frame
     @ctrl = Wx::AuiNotebook.new( self, Wx::ID_ANY,
                                 Wx::Point.new(client_size.x, client_size.y),
                                 Wx::Size.new(500, 500),
-                                Wx::AUI_NB_DEFAULT_STYLE|
+                                AUI_NB_TAB_SPLIT|AUI_NB_TAB_MOVE|AUI_NB_SCROLL_BUTTONS|
       Wx::AUI_NB_TAB_EXTERNAL_MOVE|Wx::NO_BORDER)
+    @ctrl.use_glossy_art()  
     #pi = AuiPaneInfo.new  
     #pi.set_name('codeeidtor').set_caption(LANG[:CODEBLOCK][:TITLE])
     #pi.top.set_maximize_button#.set_close_button(false)
@@ -112,9 +130,17 @@ class RMMain < Frame
                                             Wx::ART_OTHER, 
                                             Wx::Size.new(16,16) )    
     @ctrl.add_page(@codeeditor=CodeEditor.new(self),LANG[:CODEBLOCK][:TITLE],false,page_bmp)
+    @ctrl.add_page(@xxx=Panel.new(self),"Some fuck",false,page_bmp)
+    @ctrlindex=0
+    #puts @ctrl.methods
+    evt_auinotebook_page_changed(@ctrl.id){|evt|
+      @ctrlindex = evt.index
+      $mainWindow.onChangedPage
+    }
+    
     pi = Wx::AuiPaneInfo.new
-    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left.hide# {auto hide}
-    @mgr.add_pane(ScriptGuide.new(self),pi)
+    pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left.set_close_button(false).hide# {auto hide}
+    @mgr.add_pane(@scriptguide=ScriptGuide.new(self),pi)
 
     pi = Wx::AuiPaneInfo.new
     pi.set_name('outputWindow').set_caption(LANG[:OUTPUT]).bottom#.hide# {auto hide}
@@ -127,6 +153,11 @@ class RMMain < Frame
     @mgr.add_pane(@ctrl, pi)
     
     set_min_size( Wx::Size.new(400,300) )
+    t=@TemplateOpener = FileDialog.new(self,LANG[:TEMPLATEOPENER][:MESSAGE])
+    t.set_wildcard(LANG[:TEMPLATEOPENER][:WILDCARD])
+    t.set_directory(Dir.pwd)   
+    
+    initializemenu
     
     @mgr.update
     print "Welcome to use AEC-Project!"
@@ -135,13 +166,20 @@ class RMMain < Frame
     reset("(none)")
 
   end
-  def onOpening(t,p)
-    print "#{t} #{p}"
+  def onChangedPage
+    if @ctrl.get_page(@ctrlindex)==@codeeditor
+        @mgr.get_pane('scriptGuide').show
+      else
+        @mgr.get_pane('scriptGuide').hide
+      end
+      @mgr.update
   end
   def initializemenu
-    menuBar = Wx::MenuBar.new()
     @FLAG=[]
-    @menuHash={}
+    @menuHash={}    
+    #MainMenuBar
+    menuBar = @mainmenuBar = Wx::MenuBar.new()
+
     for i in 0...LANG[:MENU][:KEYS].size
       if LANG[:MENU][:KEYS][i].is_a?(Symbol) and LANG[:MENU][:VALUES][i].is_a?(Symbol) and LANG[:MENU][LANG[:MENU][:VALUES][i]].is_a?(Array)
         proc {$SAFE=2;eval("@menu#{LANG[:MENU][:KEYS][i].to_s} = Wx::Menu.new();H.createMenu(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:VALUES][i].to_s}],@FLAG,@menuHash);menuBar.append(@menu#{LANG[:MENU][:KEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:KEYS][i].to_s}])")}.call()
@@ -149,15 +187,44 @@ class RMMain < Frame
         puts "Error on Loading Menu Language File #{LANG[:MENU][:KEYS][i]}\r\n"
       end
     end
-    set_menu_bar( menuBar )
+   #set_menu_bar( menuBar )
+
+    for i in 0...LANG[:MENU][:MAPKEYS].size
+      if LANG[:MENU][:MAPKEYS][i].is_a?(Symbol) and LANG[:MENU][:MAPVALUES][i].is_a?(Symbol) and LANG[:MENU][LANG[:MENU][:MAPVALUES][i]].is_a?(Array)
+        proc {$SAFE=2;eval("@menu#{LANG[:MENU][:MAPKEYS][i].to_s} = Wx::Menu.new();H.createMenu(@menu#{LANG[:MENU][:MAPKEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:MAPVALUES][i].to_s}],@FLAG,@menuHash);menuBar.append(@menu#{LANG[:MENU][:MAPKEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:MAPKEYS][i].to_s}])")}.call()
+      else
+        puts "Error on Loading Menu Language File #{LANG[:MENU][:MAPKEYS][i]}\r\n"
+      end
+    end
+    for i in 0...LANG[:MENU][:TKEYS].size
+      if LANG[:MENU][:TKEYS][i].is_a?(Symbol) and LANG[:MENU][:TVALUES][i].is_a?(Symbol) and LANG[:MENU][LANG[:MENU][:TVALUES][i]].is_a?(Array)
+        proc {$SAFE=2;eval("@menu#{LANG[:MENU][:TKEYS][i].to_s} = Wx::Menu.new();H.createMenu(@menu#{LANG[:MENU][:TKEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:TVALUES][i].to_s}],@FLAG,@menuHash);menuBar.append(@menu#{LANG[:MENU][:TKEYS][i].to_s},LANG[:MENU][:#{LANG[:MENU][:TKEYS][i].to_s}])")}.call()
+      else
+        puts "Error on Loading Menu Language File #{LANG[:MENU][:TKEYS][i]}\r\n"
+      end
+    end
+   set_menu_bar( menuBar )
     evt_menu @menuHash[:NEW],:onMenuNew
 #    puts @menuHash[:ADDTEMPLATE]
     evt_menu @menuHash[:ADDTEMPLATE],:onMenuAddTemplate
     evt_menu @menuHash[:ABOUT],proc{|evt|box=AboutDialogInfo.new; box.set_copyright("Copyright (C) 2012-2013 Yangff@66RPG");box.set_name("ACE - Project");box.set_version("0.0.1");box.set_developers(["Yangff","WANTED YOU!"]);box.set_license($APACHEV2);box.set_web_site("http://bbs.66rpg.com","66RPG");about_box(box)}
-    t=@TemplateOpener = FileDialog.new(self,LANG[:TEMPLATEOPENER][:MESSAGE])
-    t.set_wildcard(LANG[:TEMPLATEOPENER][:WILDCARD])
-    t.set_directory(Dir.pwd)
-    #evt_menu @menuHash[:OPEN],:onMenuOpen
+    
+    
+    evt_menu @menuHash[:OPEN],:onMenuOpen
+  end
+  def onMenuOpen
+    if TemplateManager.getall.keys.size<=0
+      #TODO :ASK TO INSTALL Template
+      return false
+    end
+    if ProjectManager.saved==false
+      #TODO :ASK FOR SAVE#
+      print "TODO :ASK FOR SAVE"
+    end
+    
+  end
+  def onOpening(t,p)
+    print "#{t} #{p}"
   end
   def onMenuNew(e)
     if TemplateManager.getall.keys.size<=0
@@ -180,5 +247,5 @@ class RMMain < Frame
     end
     
   end
-  attr_reader :mgr,:codeeditor
+  attr_reader :mgr,:codeeditor ,:scriptguide
 end

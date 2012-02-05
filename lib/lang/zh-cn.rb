@@ -9,9 +9,13 @@ LANG={
   :MENU=>
     {
                         #:MODE,:DRAW,:BILLY,
-      :KEYS=>[:FILE,:EDIT,:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
+      :KEYS=>[:FILE,:EDIT],
                             #,:MODEs,:DRAWs,:BILLYs
-      :VALUES=>[:FILEs,:EDITs,:TOOLSs,:TESTs,:WINDOWSs,:PLUGINSs,:HELPs],
+      :VALUES=>[:FILEs,:EDITs,],
+      :MAPKEYS=>[:MODE,:DRAW,:BILLY,],
+      :MAPVALUES=>[:MODEs,:DRAWs,:BILLYs,],
+      :TKEYS=>[:TOOLS,:TEST,:WINDOWS,:PLUGINS,:HELP],
+      :TVALUES=>[:TOOLSs,:TESTs,:WINDOWSs,:PLUGINSs,:HELPs],
       :FILE   =>"文件(&F)",
       :EDIT   =>"编辑(&E)",
       :MODE   =>"模式(&M)",

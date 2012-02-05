@@ -17,6 +17,8 @@
     $data_common_events = load_data("Data/CommonEvents.rvdata2")
     $data_system        = load_data("Data/System.rvdata2")
     $data_mapinfos      = load_data("Data/MapInfos.rvdata2")
+    
+    $scripts=load_data("Data/Scripts.rvdata2")
   end
   def self.save_normal_database()
     save_data($data_actors            ,"Data/Actors.rvdata2")

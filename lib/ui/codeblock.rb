@@ -9,7 +9,7 @@ class CodePage
   attr_accessor         :name
   attr_accessor         :stoppoints
   attr_accessor         :row
-  def initialize(script="",name="",stoppoints="")
+  def initialize(name="",script="",stoppoints=[])
     @script=script
     @name=name
     @stoppoints=stoppoints
@@ -17,6 +17,7 @@ class CodePage
 end
 class CodeBlock < Panel
   class KeywordsDialog < Dialog  
+    
       def initialize(parent,helper,func=0, options = {})  
           super(parent, options.merge!(:size => [500, 500],:title=>LANG[:CODEBLOCK][:FIND])) 
           @helper=helper
@@ -243,6 +244,13 @@ class CodeBlock < Panel
   def cancel
     @pages=deep_copy(@oldpages)
     GC.start
+  end
+  def clear(pages=[nil,CodePage.new("","",[])])
+    clear_all
+    @pages=pages
+    @oldpages=deep_copy(@pages)
+    GC.start
+    impolitechangeto(1)
   end
   def save_page
     @pages[@page].script=@sci.get_text()
