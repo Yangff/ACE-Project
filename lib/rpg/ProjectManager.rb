@@ -16,8 +16,10 @@ module ProjectManager
   
   def self.save(&progress)
     progress.call(LANG[:SAVINGProject],0)
-    DataManager.load_normal_database()
+    DataManager.save_normal_database()
+    progress.call(LANG[:SAVINGProject],98)
     @@saved=true
+    progress.call(LANG[:SAVINGProject],100)
   end
   def self.title
     return @@title
@@ -58,7 +60,7 @@ module ProjectManager
   end
   def self.open(proj,&progress)
     begin
-      self.close unless @@projectName.nil?
+      self.close #unless @@projectName.nil?
       return unless @@projectName.nil?
       if File.exists?(proj+".lock") #if File.exists?(@@projfile+".lock")
         self.close

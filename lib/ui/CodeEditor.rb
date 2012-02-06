@@ -8,6 +8,10 @@ class CodeEditor < Panel
   def scip
     return @textbox
   end
+
+  def save
+    @textbox.save
+  end
 end
 class ScriptGuide < Panel
   def initialize(parent, options = {})

@@ -146,7 +146,16 @@ LANG={
     :FOOPENER=>{
       :MESSAGE=>"请选择工程保存的目录"
     },
+    :MAPEDITOR=>{
+      :TITLE=>"地图编辑器",
+      :GUIDE=>"地图导航",
+    },
+    :PjOPENER=>{
+      :MESSAGE =>"选择要打开的工程",
+      :WILDCARD=>"项目文件(*.rvproject2x)|*.rvproject2x",
+    }
 }
+
 $APACHEV2=<<EOF
 Based on RPG MAKER VX ACE Version 1.0.0 Copyright (C) 2011 Enterbrain , Inc. / 
 Yoji Ojima

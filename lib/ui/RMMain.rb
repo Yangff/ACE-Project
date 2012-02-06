@@ -45,8 +45,8 @@ class RMMain < Frame
       @yes = Button.new(self,:label=>l[:YES],:pos=>Wx::Point.new(280,117+yxo),:size=>Size.new(88,23));@yes.set_default()
       @no = Button.new(self,:label=>l[:NO],:pos=>Wx::Point.new(375,117+yxo),:size=>Size.new(88,23))
       t=@FoOpener = DirDialog.new(self,LANG[:FOOPENER][:MESSAGE],:style=>DD_DEFAULT_STYLE|DD_CHANGE_DIR)
-      
       t.set_path(Dir.pwd)
+
       evt_paint {|evt|paint{|dc|dc.gradient_fill_linear(get_client_rect(),Colour.new(228,240,252),Colour.new(196,208,220),Wx::SOUTH)}}
       @oldfod=ProjectManager.getProjectAutoNewName
       evt_button(@no.id){self.close}
@@ -111,11 +111,17 @@ class RMMain < Frame
     @mgr.get_pane(@ctrl).show
     scripts=[nil]
     for i in $scripts
-      scripts<<CodePage.new(i[1],Zlib::Inflate.inflate(i[2]),[])
-      #print Zlib::Inflate.inflate(i[2])
+      d=Zlib::Inflate.inflate(i[2]).force_encoding("UTF-8")
+      ary=[]
+      ary=i[0] if i[0].is_a?(Array)
+      scripts<<CodePage.new(i[1],d,ary)
+     
     end
     @codeeditor.scip.clear(scripts)
     @scriptguide.clear(scripts)
+    
+    @mapeditor.changeto()
+    @mapguide.changeto()
     onChangedPage
     @mgr.update
   end
@@ -124,7 +130,7 @@ class RMMain < Frame
     #DISABLE MENU
   end
   def initialize(open="")
-    super(nil,:title=>ProjectManager.title,:size=>[1115,700])
+    super(nil,:title=>ProjectManager.title,:size=>[960,700])
     
     #@textbox=CodeBlock.new(self)
     @mgr = AuiManager.new()
@@ -143,8 +149,10 @@ class RMMain < Frame
     page_bmp = Wx::ArtProvider::get_bitmap( Wx::ART_NORMAL_FILE, 
                                             Wx::ART_OTHER, 
                                             Wx::Size.new(16,16) )    
+    #TODO :MapEditor
+    @ctrl.add_page(@mapeditor=MapEditor.new(self),LANG[:MAPEDITOR][:TITLE],false,page_bmp)
     @ctrl.add_page(@codeeditor=CodeEditor.new(self),LANG[:CODEBLOCK][:TITLE],false,page_bmp)
-    @ctrl.add_page(@xxx=Panel.new(self),"Some fuck",false,page_bmp)
+    
     @ctrlindex=0
     #puts @ctrl.methods
     evt_auinotebook_page_changed(@ctrl.id){|evt|
@@ -155,7 +163,9 @@ class RMMain < Frame
     pi = Wx::AuiPaneInfo.new
     pi.set_name('scriptGuide').set_caption(LANG[:CODEBLOCK][:GUIDE]).left.set_close_button(false).hide# {auto hide}
     @mgr.add_pane(@scriptguide=ScriptGuide.new(self),pi)
-
+    pi = Wx::AuiPaneInfo.new
+    pi.set_name('mapGuide').set_caption(LANG[:MAPEDITOR][:GUIDE]).left.set_close_button(false).hide# {auto hide}
+    @mgr.add_pane(@mapguide=MapGuide.new(self),pi)
     pi = Wx::AuiPaneInfo.new
     pi.set_name('outputWindow').set_caption(LANG[:OUTPUT]).bottom#.hide# {auto hide}
     pi.set_pin_button(true).set_minimize_button(true)
@@ -170,7 +180,10 @@ class RMMain < Frame
     t=@TemplateOpener = FileDialog.new(self,LANG[:TEMPLATEOPENER][:MESSAGE])
     t.set_wildcard(LANG[:TEMPLATEOPENER][:WILDCARD])
     t.set_directory(Dir.pwd)   
-    
+      t=@PjOpener = FileDialog.new(self,LANG[:PjOPENER][:MESSAGE],:style=>FD_DEFAULT_STYLE|FD_FILE_MUST_EXIST)
+      t.set_path(Dir.pwd)
+      t.set_wildcard(LANG[:PjOPENER][:WILDCARD])
+          
     initializemenu
     
     @mgr.update
@@ -182,11 +195,16 @@ class RMMain < Frame
   end
   def onChangedPage
     if @ctrl.get_page(@ctrlindex)==@codeeditor
-        @mgr.get_pane('scriptGuide').show
-      else
-        @mgr.get_pane('scriptGuide').hide
-      end
-      @mgr.update
+      @mgr.get_pane('scriptGuide').show
+    else
+      @mgr.get_pane('scriptGuide').hide
+    end
+    if @ctrl.get_page(@ctrlindex)==@mapeditor
+      @mgr.get_pane('mapGuide').show
+    else
+      @mgr.get_pane('mapGuide').hide
+    end
+    @mgr.update
   end
   def initializemenu
     @FLAG=[]
@@ -223,8 +241,12 @@ class RMMain < Frame
     evt_menu @menuHash[:ADDTEMPLATE],:onMenuAddTemplate
     evt_menu @menuHash[:ABOUT],proc{|evt|box=AboutDialogInfo.new; box.set_copyright("Copyright (C) 2012-2013 Yangff@66RPG");box.set_name("ACE - Project");box.set_version("0.0.1");box.set_developers(["Yangff","WANTED YOU!"]);box.set_license($APACHEV2);box.set_web_site("http://bbs.66rpg.com","66RPG");about_box(box)}
     
-    
+    evt_menu @menuHash[:SAVE],:onMenuSave
     evt_menu @menuHash[:OPEN],:onMenuOpen
+  end
+  def onMenuSave
+    @codeeditor.save
+    ProjectManager.save{ |t,p| onOpening(t,p)}
   end
   def onMenuOpen
     if TemplateManager.getall.keys.size<=0
@@ -235,7 +257,11 @@ class RMMain < Frame
       #TODO :ASK FOR SAVE#
       print "TODO :ASK FOR SAVE"
     end
-    
+    if @PjOpener.show_modal==ID_OK
+      path=@PjOpener.get_path
+      coverPath(path)
+      ProjectManager.open(path) { |t,p| onOpening(t,p)}
+    end
   end
   def onOpening(t,p)
     print "#{t} #{p}"
@@ -261,5 +287,5 @@ class RMMain < Frame
     end
     
   end
-  attr_reader :mgr,:codeeditor ,:scriptguide
+  attr_reader :mgr,:codeeditor ,:scriptguide,:mapeditor,:mapguide
 end

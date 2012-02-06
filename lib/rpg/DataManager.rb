@@ -17,8 +17,9 @@
     $data_common_events = load_data("Data/CommonEvents.rvdata2")
     $data_system        = load_data("Data/System.rvdata2")
     $data_mapinfos      = load_data("Data/MapInfos.rvdata2")
+    $scripts = load_data("Data/Scripts.rvdata2")
+    $maps=[]
     
-    $scripts=load_data("Data/Scripts.rvdata2")
   end
   def self.save_normal_database()
     save_data($data_actors            ,"Data/Actors.rvdata2")
@@ -35,5 +36,6 @@
     save_data($data_common_events     ,"Data/CommonEvents.rvdata2")
     save_data($data_system            ,"Data/System.rvdata2")
     save_data($data_mapinfos          ,"Data/MapInfos.rvdata2")
+    save_data($scripts                ,"Data/Scripts.rvdata2")
   end
  end

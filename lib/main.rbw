@@ -39,52 +39,67 @@ module Helpers
       end
     end    
   end
-def removeall(src)
-  list=Dir.entries(src)
-  list.each_index do |x| 
-    next if list[x]=="." or list[x]==".."
-    if File.directory?(src+list[x])
-      removeall(src+list[x]+"\\")
-      Dir.delete(src+list[x]+"\\")
-    else
-      File.delete(src+list[x])
-    end
-    
-  end  
-end
-def errorMsg(msg)
-  print msg
-  return false
-end
-def succeedMsg(msg)
-  print msg
-  return false
-end
-def normalMsg(msg)
-  print msg
-  return false
-end
-def copyall(src,target)
-  list=Dir.entries(src)
-  list.each_index do |x| 
-    next if list[x]=="." or list[x]==".." or list[x]==".svn" or list[x]=="entries" or list[x]==".git"
-    #puts list[x]
-    unless File.directory?(src+list[x]) 
-      FileUtils.cp "#{src+list[x]}",target
-    else
-      Dir::mkdir(target+list[x])
-      copyall(src+list[x]+"\\",target+list[x]+"\\")
+  def removeall(src)
+    list=Dir.entries(src)
+    list.each_index do |x| 
+      next if list[x]=="." or list[x]==".."
+      if File.directory?(src+list[x])
+        removeall(src+list[x]+"\\")
+        Dir.delete(src+list[x]+"\\")
+      else
+        File.delete(src+list[x])
+      end
+
+    end  
+  end
+  def errorMsg(msg)
+    print msg
+    return false
+  end
+  def succeedMsg(msg)
+    print msg
+    return false
+  end
+  def normalMsg(msg)
+    print msg
+    return false
+  end
+  def copyall(src,target)
+    list=Dir.entries(src)
+    list.each_index do |x| 
+      next if list[x]=="." or list[x]==".." or list[x]==".svn" or list[x]=="entries" or list[x]==".git"
+      #puts list[x]
+      unless File.directory?(src+list[x]) 
+        FileUtils.cp "#{src+list[x]}",target
+      else
+        Dir::mkdir(target+list[x])
+        copyall(src+list[x]+"\\",target+list[x]+"\\")
+      end
     end
   end
-end
-def pathary2path(path)
-    path1=""
-  
-  for i in path
-    path1<<i<<"\\"
+  def pathary2path(path)
+      path1=""
+
+    for i in path
+      path1<<i<<"\\"
+    end
+    return path1
   end
-  return path1
-end
+  def load_data(filename)
+    obj=nil
+    File.open(filename, "rb") { |f|
+      obj = Marshal.load(f)
+    }
+    return obj
+  end
+  def save_data(obj, filename) 
+    File.open(filename, "wb") { |f|
+      Marshal.dump(obj, f)
+    }
+  end
+  def coverPath(path)
+    path.gsub!(/\//){"\\"}
+  end
 end
 H=Helpers
 include H 
@@ -93,18 +108,6 @@ $f=File
 def debugOut(data)
   File.open("#{Config.ProgramPath}debug.cfg", "ab") { |f|
     f.write(data)
-  }
-end
-def load_data(filename)
-  obj=nil
-  File.open(filename, "rb") { |f|
-    obj = Marshal.load(f)
-  }
-  return obj
-end
-def save_data(obj, filename) 
-  File.open(filename, "wb") { |f|
-    Marshal.dump(obj, f)
   }
 end
 
@@ -149,10 +152,12 @@ module Config
     return @@programPath
   end
 end
-
+C=Config
 Config._init
 ProjectManager.init
+PM=ProjectManager
 TemplateManager._init
+TM=TemplateManager
 $DEBUG=true
 #Win32API.new('user32', 'MessageBox', %w(p p p i), 'i').call(0,Dir.pwd  , "ACE-Project", 0) 
 def msgbox(code,title="ACE-Project",hwnd=0,unit=0)
@@ -175,9 +180,11 @@ $mainApp=RMApp.new
 
 #$plugins=Plugins.new($plugins)
 #$plugins.start($mainApp,$mainWindow)
+begin
 $mainApp.main_loop
+rescue
 
- 
+end
  
 $exited=true
 Config.save

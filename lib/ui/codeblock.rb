@@ -60,7 +60,7 @@ class CodeBlock < Panel
   end
   def initialize(window,auto=[],now=0)
 
-    font = Font.new(12, TELETYPE, NORMAL, NORMAL,false,"Lucida Console")
+    font = Font.new(12, TELETYPE, NORMAL, NORMAL,false,"Simsun")#"Lucida Console")
     @dirty=false
     @oldpages=deep_copy(auto)
     @sci = StyledTextCtrl.new(window)
@@ -333,5 +333,22 @@ class CodeBlock < Panel
     end  
 
   end
-
+=begin
+    for i in $scripts
+      d=Zlib::Inflate.inflate(i[2]).force_encoding("UTF-8")
+      ary=[]
+      ary=i[0] if i[0].is_a?(Array)
+      scripts<<CodePage.new(i[1],d,ary)
+     
+    end
+=end
+  def save
+    apply
+    $scripts=[]
+    for i in @pages
+      next if i.nil?
+      $scripts<<[i.stoppoints,i.name,Zlib::Deflate.deflate(i.script)]
+    end
+    GC.start
+  end
 end
